@@ -1,0 +1,96 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+                template="./template/adminStaff.xhtml"
+                xmlns:h="http://xmlns.jcp.org/jsf/html"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:f="http://xmlns.jcp.org/jsf/core">
+
+
+    <ui:define name="content">
+        <h3>Hall List</h3>
+        <h:form id="viewHallsForm">
+
+            <p:messages redisplay="false" globalOnly="true" id="viewHallsMessages" closable="true"/>
+            <p:dataGrid id="hallDataGrid" var="hall" value="#{hallManagedBean.halls}" 
+                        columns="4" layout="grid" rows="20" paginator="true" paginatorPosition="bottom"
+                        paginatorTemplate="{FirstPageLink} {PreviousPageLink} {CurrentPageReport} {NextPageLink} {LastPageLink}">
+                <f:facet name="header">
+                    Cinema: #{hallManagedBean.cinemaToView.name}
+                </f:facet>
+
+                <p:panel>
+                    <h:panelGrid columns="1" style="width:100%;text-align:center;">
+                        <h:outputText value="Hall #{hall.number}" />
+
+                        <p:commandLink update="hallDetailsForm" action="#{hallManagedBean.viewHallDetails}" title="View/Actions">
+                            <h:outputText value="view seatsplan"/>
+                            <f:setPropertyActionListener value="#{hall}" target="#{hallManagedBean.thisHall}" />
+                        </p:commandLink>
+                        
+                        <p:commandLink update="viewHallsForm" action="#{hallManagedBean.deleteHall}">
+                            <h:outputText value="delete"/>
+                            <f:setPropertyActionListener value="#{hall}" target="#{hallManagedBean.thisHall}" />
+                        </p:commandLink>
+
+                    </h:panelGrid>
+                </p:panel>
+            </p:dataGrid>
+
+            <p:commandButton value="Create New Hall" onclick="PF('createHallDialog').show();" />
+        </h:form>
+
+
+        <h:form id="hallDetailsForm">
+            <p:dialog id="hallDetailsDialog" widgetVar="hallDetailsDialog" header="Hall SeatsPlan" closable="true" modal="true">
+                <p:messages globalOnly="true" redisplay="false" id="hallDetailsMessages" closable="true"/>
+                <p:dataTable id="updateSeatDataTable" var="row" value="#{hallManagedBean.seats}" widgetVar="updateSeatsDataTable" editMode="cell" editable="true">
+                    <p:columns styleClass="ui-editable-column" value="#{hallManagedBean.columns}" var="column" columnIndexVar="colIndex">
+                        <f:facet name="header">
+                            <h:outputText value="#{column.header}" />
+                        </f:facet>
+                        <p:cellEditor>
+                            <f:facet name="output"><h:outputText value="#{row[column.property]}"/></f:facet>
+                            <f:facet name="input">
+                                <h:selectOneMenu value="#{row[column.property]}" style="width:100%">
+                                    <f:selectItem itemLabel="Normal Seat" itemValue="S" />
+                                    <f:selectItem itemLabel="Handicap Seat" itemValue="H" />
+                                    <f:selectItem itemLabel="Empty" itemValue="X" />
+                                </h:selectOneMenu>
+                            </f:facet>
+                        </p:cellEditor>
+                    </p:columns>
+                </p:dataTable>
+
+                <p:commandButton update="hallDetailsMessages" value="Update" actionListener="#{hallManagedBean.updateHall}" oncomplete="PF('hallDetailsDialog').show();"/>
+               
+            </p:dialog>
+        </h:form>
+
+        <p:dialog header="Add Hall - Indicate numbers of row and columns" 
+                  id="createHallDialog" widgetVar="createHallDialog"  modal="true" closable="true">
+            <h:form>
+                <p:messages id="create-hall-msg" globalOnly="true"/>
+                <h:outputLabel for="new-hall-rows" value="Num of Rows: " />
+                <p:inputText id="new-hall-rows" 
+                    value="#{hallManagedBean.numOfRows}"
+                    required="true"
+                    requiredMessage="Please enter a value." />
+                <p:message for="new-hall-rows"/>
+                <h:outputLabel for="new-hall-cols" value="Num of Columns: " />
+                <p:inputText 
+                    id="new-hall-cols" 
+                    value="#{hallManagedBean.numOfCols}"
+                    required="true"
+                    requiredMessage="Please enter a value." />
+                <p:message for="new-hall-cols"/>
+
+                <p:commandLink update="viewHallsForm create-hall-msg" action="#{hallManagedBean.createHall()}">
+                    <h:outputText value="Add New Hall" />
+                </p:commandLink>
+
+            </h:form>
+        </p:dialog>
+    </ui:define>
+
+</ui:composition>

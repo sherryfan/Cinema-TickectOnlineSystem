@@ -1,0 +1,158 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+                template="./template/adminStaff.xhtml"
+                xmlns:h="http://xmlns.jcp.org/jsf/html"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:f="http://xmlns.jcp.org/jsf/core">
+
+
+    <ui:define name="content">
+        <h:form id="viewMovies">
+            <p:messages redisplay="false" globalOnly="true" id="viewMoviesMessages" closable="true"/>
+            <p:dataTable id="moviesDataTable" widgetVar="moviesDataTable" value="#{movieManagedBean.movies}" var="movie"
+                         rows="10" paginator="true" paginatorPosition="bottom" paginatorTemplate="{FirstPageLink} {PreviousPageLink} {CurrentPageReport} {NextPageLink} {LastPageLink}">
+
+                <p:column headerText="Movie Title" filterBy="#{movie.title}" filterMatchMode="contains">
+                    <h:outputText value="#{movie.title}" />
+                </p:column>
+                <p:column headerText="Rating" filterBy="#{movie.rating}">
+                    <h:outputText value="#{movie.rating}" />
+                </p:column>
+                <p:column headerText="Duration" filterBy="#{movie.duration}">
+                    <h:outputText value="#{movie.duration}" />
+                </p:column>
+
+                <p:column headerText="Action" >
+                    <p:commandButton action="PF('updateMovieDialog').show();" 
+                                     icon="ui-icon-pencil" title="Update">
+                        <f:setPropertyActionListener value="#{movie}" target="#{movieManagedBean.thisMovie}" />
+                    </p:commandButton>
+                    <p:commandButton action="#{movieManagedBean.deleteMovie}" 
+                                     icon="ui-icon-trash"  update="viewMovies:moviesDataTable viewMovies:viewMoviesMessages">
+                        <f:setPropertyActionListener value="#{movie}" target="#{movieManagedBean.thisMovie}" />
+                        <p:confirm header="Confirmation" message="Are you sure you want to delete movie: #{movie.title}?" icon="ui-icon-alert" />
+                    </p:commandButton>
+                </p:column>
+            </p:dataTable>
+
+            <p:confirmDialog global="true" showEffect="fade" hideEffect="fade">
+                <p:commandButton value="Yes"  type="button" styleClass="ui-confirmdialog-yes" icon="ui-icon-check" />
+                <p:commandButton value="No" type="button" styleClass="ui-confirmdialog-no" icon="ui-icon-close" />
+            </p:confirmDialog>
+
+            <p:commandButton value="Create New Movie" onclick="PF('createMovieDialog').show();" />
+        </h:form>
+
+        <!--Dialogs-->
+        <p:dialog id="createMovieDialog" widgetVar="createMovieDialog" header="Add New Movie" closable="true">
+            <p:messages globalOnly="true" redisplay="false" id="createMovieMessage" closable="true"/>
+            <h:form>
+                <p:outputLabel 
+                    for="new-movie-image" 
+                    value="Upload images: #{moviesManagedBean.newMovie.images.size()} uploaded"/>
+                <p:fileUpload 
+                    id="new-movie-image" 
+                    required="true" 
+                    requiredMessage="Please upload some images for the movie." 
+                    update="@form new-movie-image"
+                    value="#{movieManagedBean.movieImage}" 
+                    fileUploadListener="#{movieManagedBean.uploadImage}"
+                    mode="advanced" 
+                    skinSimple="true"
+                    sizeLimit="10000000" 
+                    allowTypes="/(\.|\/)(gif|jpe?g|png)$/" 
+                    multiple="true" />
+                <p:messages 
+                    for="new-movie-image" 
+                    globalOnly="true" 
+                    id="upload-success" />
+                
+                <h:outputLabel for="new-movie-name" value="Movie name: " />
+                <p:inputText 
+                    id="new-movie-name" 
+                    value="#{movieManagedBean.newMovie.title}"
+                    placeholder="Enter a title..."
+                    required="true"
+                    requiredMessage="Please enter a name for the movie." />
+                <p:message for="new-movie-name"/>
+                
+                <h:outputLabel for="new-movie-duration" value="Movie duration " />
+                <p:inputText 
+                    id="new-movie-duration" 
+                    value="#{movieManagedBean.newMovie.duration}"
+                    placeholder="Enter a duration..."
+                    required="true"
+                    requiredMessage="Please enter a duration for the movie." />
+                <p:message for="new-movie-duration"/>
+                
+                <h:outputLabel for="new-movie-rating" value="Rating: " />
+                <p:outputLabel  value = "#{movieManagedBean.newMovie.rating}"/>
+                <p:selectOneListbox 
+                    id="new-movie-rating" 
+                    value="#{movieManagedBean.newMovie.rating}"
+                    required="true"
+                    requiredMessage="Please select a rating for the movie.">
+                    <f:selectItem itemLabel="G" itemValue="G" />
+                    <f:selectItem itemLabel="PG" itemValue="PG" />
+                    <f:selectItem itemLabel="PG13" itemValue="PG13" />
+                    <f:selectItem itemLabel="NC16" itemValue="NC16" />
+                    <f:selectItem itemLabel="M18" itemValue="M18" />
+                    <f:selectItem itemLabel="R21" itemValue="R21" />
+                </p:selectOneListbox>
+                
+                
+
+                <p:commandLink
+                    update="viewMovies createMovieDialog" 
+                    action="#{movieManagedBean.addMovie}">
+                    <h:outputText value="Confirm and Save" />
+                </p:commandLink>
+            </h:form>
+        </p:dialog>
+
+        <p:dialog id="updateMovieDialog" widgetVar="updateMovieDialog" header="Update Movie" closable="true">
+            <p:messages globalOnly="true" redisplay="false" id="updateMovieMessage" closable="true"/>
+            <h:form>
+                <h:outputLabel for="updated-movie-name" value="Change movie name to: " />
+                <p:inputText 
+                    id="updated-movie-name" 
+                    value="#{movieManagedBean.thisMovie.title}"
+                    placeholder="Enter a name..."
+                    required="true"
+                    requiredMessage="Please enter a name for the movie." />
+                <p:message for="updated-movie-name"/>
+                <p:inputText 
+                    id="new-movie-duration" 
+                    value="#{movieManagedBean.thisMovie.duration}"
+                    placeholder="Enter a duration..."
+                    required="true"
+                    requiredMessage="Please enter a duration for the movie." />
+                <p:message for="new-movie-duration"/>
+                <h:outputLabel for="new-movie-rating" value="Rating: " />
+                <p:outputLabel  value = "#{movieManagedBean.newMovie.rating}"/>
+                <p:selectOneListbox 
+                    id="new-movie-rating" 
+                    value="#{movieManagedBean.thisMovie.rating}"
+                    required="true"
+                    requiredMessage="Please select a rating for the movie.">
+                    <f:selectItem itemLabel="G" itemValue="G" />
+                    <f:selectItem itemLabel="PG" itemValue="PG" />
+                    <f:selectItem itemLabel="PG13" itemValue="PG13" />
+                    <f:selectItem itemLabel="NC16" itemValue="NC16" />
+                    <f:selectItem itemLabel="M18" itemValue="M18" />
+                    <f:selectItem itemLabel="R21" itemValue="R21" />
+                </p:selectOneListbox>
+
+
+                <p:commandLink
+                    update="viewMovies updateMovieDialog" 
+                    action="#{movieManagedBean.updateMovie}">
+                    <h:outputText value="Confirm and Save" />
+                </p:commandLink>
+            </h:form>
+        </p:dialog>
+        
+    </ui:define>
+
+</ui:composition>

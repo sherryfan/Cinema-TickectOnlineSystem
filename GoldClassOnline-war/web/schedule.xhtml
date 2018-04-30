@@ -1,0 +1,154 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+                template="./template/operationStaff.xhtml"          
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:h="http://xmlns.jcp.org/jsf/html"
+                xmlns:f="http://xmlns.jcp.org/jsf/core">
+
+
+
+    <ui:define name="content">
+        <h3>Schedules</h3>
+        <p:commandLink 
+            onclick="PF('create-schedule-dialog').show();">
+            <h:outputText value="Add New Schedule" />
+        </p:commandLink>
+        <h:form id="viewSchedulesForm">
+            <!--display schedules of a hall by day-->
+            <ui:repeat
+                value="#{scheduleManagedBean.days}" var="day" varStatus="dayStatus">
+                <h:outputText value="#{day}" />
+
+                <ui:repeat
+                    value="#{scheduleManagedBean.dailySchedules.get(dayStatus.index)}"
+                    var="schedule">
+                    <p:commandLink
+                        update="view-schedule-detail"
+                        action="#{scheduleManagedBean.viewSchedule(schedule)}">
+                        <h:outputText value="From #{schedule.startTime} To #{schedule.endTime}" />
+                    </p:commandLink>                        
+
+                </ui:repeat>
+                <p:separator />
+            </ui:repeat>
+
+        </h:form>
+
+        <!--CREATE SCHEDULE FOR HALL DIALOG-->
+        <p:dialog
+            id="create-schedule-dialog"
+            widgetVar ="create-schedule-dialog"
+            header="Add Schedule For #{scheduleManagedBean.thisHall.number}"
+            modal="true"
+            closable="true">
+            <h:form>
+                <p:messages id="add-schedule-msg" globalOnly="true"/>
+                <h:outputLabel for="new-schedule-day" value="Day:  " />
+                <p:calendar
+                    id="new-schedule-day" 
+                    value="#{scheduleManagedBean.newScheduleDay}"
+                    required="true"
+                    requiredMessage="Select a day for the new schedule." />
+                <p:message for="new-schedule-day"/>
+
+                <h:outputLabel for="new-schedule-start" value="Start time:  " />
+                <p:calendar
+                    id="new-schedule-start" 
+                    value="#{scheduleManagedBean.newScheduleStart}"
+                    pattern="HH:mm" timeOnly="true"
+                    required="true"
+                    requiredMessage="Select a start time for the new schedule." />
+                <p:message for="new-schedule-start"/>
+
+                <h:outputLabel for="new-schedule-movie" value="Movie:  " />
+                <p:selectOneMenu 
+                    id="new-schedule-movie" 
+                    converter="movieConverter" 
+                    value="#{scheduleManagedBean.newScheduleMovie}" 
+                    required="true" 
+                    requiredMessage="Indicate a movie for the new schedule.">
+                    <f:selectItem itemLabel="Please Select" itemValue="" noSelectionOption="true"/>
+                    <f:selectItems 
+                        value="#{scheduleManagedBean.movies}" 
+                        var="movie" 
+                        itemLabel="#{movie.title}" 
+                        itemValue="#{movie}"/>
+                </p:selectOneMenu>
+                <p:message for="new-schedule-movie"/>
+
+                <h:outputLabel
+                    value="End time: determined by movie length and start time."/>
+
+                <center>
+                    <p:commandLink 
+                        update="@form viewSchedulesForm" 
+                        action="#{scheduleManagedBean.addSchedule}">
+                        <h:outputText value="Add New Schedule" />
+                    </p:commandLink>
+                </center>
+            </h:form>
+        </p:dialog>
+
+        <!--VIEW SCHEDULE DIALOG-->
+        <p:dialog
+            id="view-schedule-detail"
+            widgetVar = "view-schedule-detail"
+            header="Schedule Details"
+            modal="true"
+            closable="true">
+            <h:form>
+                <p:messages id="view-schedule-msg" globalOnly="true"/>
+
+                <h:outputLabel   value="Start time: #{scheduleManagedBean.thisSchedule.startTime}"/>
+
+                <h:outputLabel   value="End time: #{scheduleManagedBean.thisSchedule.endTime}"/>
+
+                <h:outputLabel  value="Cinema: #{scheduleManagedBean.thisSchedule.hall.cinema.name}"/>
+
+
+                <h:outputLabel value="Movie: #{scheduleManagedBean.thisSchedule.movie.name}"/>
+
+                <h:outputLabel   value="Hall #{scheduleManagedBean.thisSchedule.hall.number}"/>
+
+                <!--UPDATE SCHEDULE--> 
+                <h4>Change schedule</h4>
+                <h:outputLabel for="new-schedule-day" value="Day:  " />
+                <p:calendar
+                    id="new-schedule-day" 
+                    value="#{scheduleManagedBean.newScheduleDay}"
+                    required="true"
+                    requiredMessage="Please select a day for the new schedule." />
+                <p:message for="new-schedule-day"/>
+
+                <h:outputLabel for="new-schedule-start" value="Start time:  " />
+                <p:calendar
+                    id="new-schedule-start" 
+                    value="#{scheduleManagedBean.newScheduleStart}"
+                    pattern="HH:mm" timeOnly="true"
+                    required="true"
+                    requiredMessage="Please select a start time for the new schedule." />
+                <p:message for="new-schedule-start"/>
+
+                <h:outputLabel
+                    value="End time: determined by movie length and start time."/>
+
+                <p:commandLink 
+                    update="@form viewSchedulesForm" 
+                    action="#{scheduleManagedBean.updateSchedule}">
+                    <h:outputText value="Save Changes" />
+                </p:commandLink>
+                
+                <p:commandLink 
+                    update="@form viewSchedulesForm" 
+                    action="#{scheduleManagedBean.deleteSchedule}">
+                    <h:outputText value="Delete" />
+                </p:commandLink>
+
+
+            </h:form>
+        </p:dialog>
+
+    </ui:define>
+
+</ui:composition>
