@@ -1,0 +1,82 @@
+<h2>*** 1 - Two-way Data Binding ***</h2>            
+    <span>Hello {{name}}! Welcome to IS3106!</span>
+    <br/><br/>
+    What is your name? <input type="text" [(ngModel)]="name" />
+
+<h2>*** 2 - Component ***</h2>            
+    Fruits: 
+    <select [(ngModel)]="selectedFruit">
+        <option *ngFor="let fruit of fruits" value="{{fruit}}">{{fruit}}</option>
+    </select>
+
+    <br/><br/>
+
+    <div *ngIf="!selectedFruit">
+        Please select a fruit from the drop down list.
+    </div>
+
+    <div *ngIf="selectedFruit">
+        You have selected the fruit {{selectedFruit}}.
+        <button (click)="toUpperCase()">To Upper</button>
+    </div>
+
+<h2>*** 3 - Embedded View ***</h2>
+
+    <app-demo-03-child></app-demo-03-child>
+
+
+<h2>*** 4 - Data Binding ***</h2>
+
+    <p>
+        Read Only (curly braces): <input type="text" value="{{fullName}}" />
+    </p>
+    <p>
+        Read Only (square brackets): <app-demo-04-child [completeName]="fullName"></app-demo-04-child>
+    </p>
+    <p>
+        Event Listener: <input type="button" value="Click" (click)="buttonOnClick()" />
+    </p>
+    <p>
+        Read Only (curly braces): <input type="text" [(ngModel)]="fullName" />
+    </p>
+
+<h2>*** 5 - Pipes ***</h2>
+
+    <!-- Default format: output 'Mar 16, 2018'-->
+    <p>Today is {{today | date}}</p>
+    <!-- fullDate format: output 'Friday, March 16, 2018'-->
+    <p>The date is {{today | date:'fullDate'}}</p>
+    <!-- shortTime format: output '9:43 AM'-->
+    <p>The time is {{today | date:'shortTime'}}</p>
+
+    <h2>*** 6 - Directives ***</h2>
+
+    <style>
+        .paraColour {
+            color: green;
+        }
+    </style>
+    
+    
+    <p [style.color]="paraColour">
+        Lorem ipsum dolor sit amet, consectetur adipiscing elit. Praesent eleifend bibendum purus, ut ullamcorper erat consequat et. In consequat lectus iaculis viverra euismod. Nam ut finibus lorem. Integer sit amet urna sed tellus vestibulum iaculis et et nisl. Mauris vel nibh eu lectus consectetur maximus. Proin vel felis id sem scelerisque varius in ut nibh. Cras quis ligula et turpis facilisis tincidunt ut a arcu. Pellentesque mattis porta diam vitae convallis. Duis non urna neque. Donec egestas diam sit amet neque pretium pellentesque. Praesent enim dui, ullamcorper sit amet enim nec, eleifend congue odio. Donec vestibulum nisi eget sodales bibendum. Maecenas eu lacus quis nisi venenatis varius vel eget elit. Etiam tempor venenatis luctus. 
+    </p>
+    
+    <p [className]="'paraColour'">
+        Lorem ipsum dolor sit amet, consectetur adipiscing elit. Praesent eleifend bibendum purus, ut ullamcorper erat consequat et. In consequat lectus iaculis viverra euismod. Nam ut finibus lorem. Integer sit amet urna sed tellus vestibulum iaculis et et nisl. Mauris vel nibh eu lectus consectetur maximus. Proin vel felis id sem scelerisque varius in ut nibh. Cras quis ligula et turpis facilisis tincidunt ut a arcu. Pellentesque mattis porta diam vitae convallis. Duis non urna neque. Donec egestas diam sit amet neque pretium pellentesque. Praesent enim dui, ullamcorper sit amet enim nec, eleifend congue odio. Donec vestibulum nisi eget sodales bibendum. Maecenas eu lacus quis nisi venenatis varius vel eget elit. Etiam tempor venenatis luctus. 
+    </p>
+    
+    <div [ngSwitch]="choice">
+        <p *ngSwitchCase="1">Paragraph 1</p>
+        <p *ngSwitchCase="2">Paragraph 2</p>
+        <p *ngSwitchCase="3">Paragraph 3</p>
+    </div>
+
+<h2>*** 7 - Routing and Navigation ***</h2>
+
+    <h3>ID={{id}} and Fruit={{fruit}}</h3>
+
+    <br/>
+    <button (click)="goImperative()">Go Imperative</button>
+    <button (click)="goBack()">Go Back</button>
+    <button (click)="goForward()">Go Forward</button>
