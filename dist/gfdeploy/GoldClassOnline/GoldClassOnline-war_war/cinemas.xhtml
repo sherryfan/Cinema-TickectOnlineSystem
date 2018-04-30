@@ -1,0 +1,90 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+                template="./template/adminStaff.xhtml"
+                xmlns:h="http://xmlns.jcp.org/jsf/html"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:f="http://xmlns.jcp.org/jsf/core">
+
+
+    <ui:define name="content">
+        <h3>Cinema List</h3>
+
+        <h:form id="viewCinemas">
+            <p:messages redisplay="false" globalOnly="true" id="viewCinemasMessages" closable="true"/>
+            <p:dataTable id="cinemasDataTable" widgetVar="cinemasDataTable" value="#{cinemaManagedBean.cinemas}" var="cinema"
+                         rows="10" paginator="true" paginatorPosition="bottom" paginatorTemplate="{FirstPageLink} {PreviousPageLink} {CurrentPageReport} {NextPageLink} {LastPageLink}">
+
+
+                <p:column headerText="Cinema Name" filterBy="#{cinema.name}" filterMatchMode="contains">
+                    <h:outputText value="#{cinema.name}" />
+                </p:column>
+
+                <p:column headerText="Number of Halls">
+                    <h:outputText value="#{cinemaManagedBean.getNumberOfHalls(cinema.halls)}" />
+                </p:column>
+
+                <p:column headerText="Action" >
+                    <p:commandButton action="#{cinemaManagedBean.viewCinemaDetails}" icon="ui-icon-document" title="View">
+                        <f:setPropertyActionListener value="#{cinema}" target="#{cinemaManagedBean.thisCinema}" />
+                    </p:commandButton>
+                    <p:commandButton oncomplete="PF('updateCinemaDialog').show();" icon="ui-icon-pencil" title="Update">
+                        <f:setPropertyActionListener value="#{cinema}" target="#{cinemaManagedBean.thisCinema}" />
+                    </p:commandButton>
+                    <p:commandButton action="#{cinemaManagedBean.deleteCinema}" icon="ui-icon-trash"  update="viewCinemas:cinemasDataTable viewCinemas:viewCinemasMessages">
+                        <f:setPropertyActionListener value="#{cinema}" target="#{cinemaManagedBean.thisCinema}" />
+                        <p:confirm header="Confirmation" message="Are you sure you want to delete cinema: #{cinema.name}?" icon="ui-icon-alert" />
+                    </p:commandButton>
+                </p:column>
+            </p:dataTable>
+
+            <p:confirmDialog global="true" showEffect="fade" hideEffect="fade">
+                <p:commandButton value="Yes"  type="button" styleClass="ui-confirmdialog-yes" icon="ui-icon-check" />
+                <p:commandButton value="No" type="button" styleClass="ui-confirmdialog-no" icon="ui-icon-close" />
+            </p:confirmDialog>
+
+            <p:commandButton value="Create New Cinema" onclick="PF('createCinemaDialog').show();" />
+        </h:form>
+
+
+        <!--Dialogs-->
+        <p:dialog id="createCinemaDialog" widgetVar="createCinemaDialog" header="Create New Cinema" closable="true">
+            <p:messages globalOnly="true" redisplay="false" id="createCinemaMessage" closable="true"/>
+            <h:form>
+                <h:outputLabel for="new-cinema-name" value="Cinema name: " />
+                <p:inputText 
+                    id="new-cinema-name" 
+                    value="#{cinemaManagedBean.name}"
+                    placeholder="Enter a name..."
+                    required="true"
+                    requiredMessage="Please enter a name for the cinema." />
+                <p:message for="new-cinema-name"/>
+                <p:commandLink
+                    update="viewCinemas createCinemaDialog" 
+                    action="#{cinemaManagedBean.createNewCinema}">
+                    <h:outputText value="Confirm and Save" />
+                </p:commandLink>
+            </h:form>
+        </p:dialog>
+
+        <p:dialog id="updateCinemaDialog" widgetVar="updateCinemaDialog" header="Update Cinema" closable="true">
+            <p:messages globalOnly="true" redisplay="false" id="updateCinemaMessage" closable="true"/>
+            <h:form>
+                <h:outputLabel for="updated-cinema-name" value="Change cinema name to: " />
+                <p:inputText 
+                    id="updated-cinema-name" 
+                    value="#{cinemaManagedBean.newName}"
+                    placeholder="Enter a name..."
+                    required="true"
+                    requiredMessage="Please enter a name for the cinema." />
+                <p:message for="updated-cinema-name"/>
+                <p:commandLink
+                    update="viewCinemas updateCinemaDialog" 
+                    action="#{cinemaManagedBean.updateCinema}">
+                    <h:outputText value="Confirm and Save" />
+                </p:commandLink>
+            </h:form>
+        </p:dialog>
+    </ui:define>
+
+</ui:composition>
